@@ -3,13 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../../config/config.json').discordConfig;
 const botLogger = require('./botLogger');
+const { loadCommands } = require('./commandLoader');
 
 /** 
  * initializes and returns a Discord bot client
  * @returns {Object} Client instance and start time
  */
 
-function initializeBot() {
+async function initializeBot() {
     const client = new Client({
         intents: [
             GatewayIntentBits.Guilds,
@@ -22,6 +23,9 @@ function initializeBot() {
             status: 'online',
         },
     });
+
+    // Load slash commands (await to ensure they're registered before bot is ready)
+    await loadCommands(client);
 
     const eventsPath = path.join(__dirname, '../events');
     const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
