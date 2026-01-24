@@ -16,5 +16,10 @@
     "webhookPort": 3000,
     "webhookPath": "/webhook/payhip",
     "webhookURL": "http://yourdomain.com/webhook/payhip"
+  },
+  "embedColors": {
+    "newSale": 65280,
+    "refund": 16711680,
+    "subscription": 255
   }
 }
