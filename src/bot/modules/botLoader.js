@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const config = require('../../config.json');
+const config = require('../../config/config.json').discordConfig;
 const botLogger = require('./botLogger');
 
 /** 
@@ -34,7 +34,7 @@ function initializeBot() {
         } else {
             client.on(event.name, (...args) => event.execute(...args, client));
         }
-        botLogger.info(`Loaded event: ${event.name}`);
+        botLogger.log(`Loaded event: ${event.name}`);
     }
     const startTime = Date.now();
     return { client, startTime };

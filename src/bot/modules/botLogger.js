@@ -55,4 +55,5 @@ class BotLogger {
     }
 }
 
-module.exports = new BotLogger();
+const logDirectory = path.join(__dirname, '../logs');
+module.exports = new BotLogger(logDirectory);

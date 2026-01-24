@@ -1,8 +1,11 @@
 const express = require('express');
 const createEmbed = require('./embedCreator')
 const formatTime = require('./formatUptime')
-const { salesChannelId, refundsChannelId, subscriptionsChannelId, webhookPort, webhookPath } = require('../../config/config.json');
+const config = require('../../config/config.json');
 const botLogger = require("./botLogger")
+
+const { salesChannelId, refundsChannelId, subscriptionsChannelId } = config.discordConfig;
+const { webhookPort, webhookPath, webhookURL } = config.webhookConfig;
 
 const app = express();
 
@@ -18,7 +21,7 @@ const stateTime = Date.now();
  * @param {Client} botClient - Discord Bot Client
  */
 
-function initServer(botClient) {
+function serverInit(botClient) {
     client = botClient;
 
     // Verifiy the webhook endpoint
@@ -34,11 +37,10 @@ function initServer(botClient) {
 
             botLogger.logEvent(`Received webhook event: ${eventType}`);
 
-            res.status(200).send('OK')
-
             const channel = await client.channels.fetch(salesChannelId);
             if (!channel) {
                 botLogger.logError(`Channel with ID ${salesChannelId} not found.`);
+                res.status(500).send('Channel not found');
                 return;
             }
 
@@ -46,9 +48,13 @@ function initServer(botClient) {
 
             await channel.send({ embeds: [embed] });
             botLogger.logEvent(`Processed webhook event: ${eventType}`);
+            
+            res.status(200).send('OK');
         } catch (error) {
             botLogger.logError('Error processing webhook event', error);
-            res.status(500).send('Internal Server Error');
+            if (!res.headersSent) {
+                res.status(500).send('Internal Server Error');
+            }
         }
     });
 
@@ -58,4 +64,4 @@ function initServer(botClient) {
     });
 }
 
-module.exports = initServer;
+module.exports = serverInit;
