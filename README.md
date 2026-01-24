@@ -12,13 +12,15 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 - Sale item indicators
 - Logging system with daily log files
 - Environment-based configuration
+- Refund notifications
+- Subscription notifications
+- Coupon discount calculations
+- Payment type tracking
+- Multi-product display support
 
 ### In Development
 - **Simple Integration** - Single API, single tenant (server/payhip)
-  - Sales event handling with rich embeds
-  - Multi-product display support
-  - Coupon discount calculations
-  - Payment type tracking
+- Sales event handling with rich embeds
 
 ### Planned Features
 
@@ -34,11 +36,6 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 - Configuration management UI
 - Webhook endpoint management
 - Bot status and health monitoring
-
-#### Enhanced Event Types
-- Refund notifications (configured but not implemented)
-- Subscription event handling (configured but not implemented)
-- Chargeback alerts
 
 #### Discord Commands
 - `/sales` - View recent sales
