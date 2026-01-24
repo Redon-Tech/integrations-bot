@@ -1,0 +1,28 @@
+# Environment variables
+.env
+!.env.template
+.env.local
+.env.*.local
+
+# Config files
+config.json
+!template.config.json
+
+# Node.js
+node_modules/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3

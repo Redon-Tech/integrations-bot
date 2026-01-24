@@ -1,0 +1,32 @@
+{
+  "name": "payhip-sales-integration",
+  "version": "dev-0.1.0",
+  "description": "Discord bot for Payhip webhook notifications - receive sales data and post to Discord channels",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "payhip",
+    "discord",
+    "webhook",
+    "sales",
+    "notifications",
+    "integration"
+  ],
+  "author": "MiataVxbe",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Miatya/Payhip-Sales-Integration"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
