@@ -1,9 +1,9 @@
 require('dotenv').config({ path: './src/config/.env' })
-const { initBot } = require('./modules/botInit')
 const { initServer } = require('./modules/serverInit')
 const { botLogger } = require('./modules/botLogger')
+const { initializeBot } = require('./modules/botloader')
 
-const { client } = initBot()
+const { client } = initializeBot()
 
 client.login(process.env.DISCORD_BOT_TOKEN)
     .then(() => {
