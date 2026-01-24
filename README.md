@@ -22,27 +22,28 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 - **Simple Integration** - Single API, single tenant (server/payhip)
 - Sales event handling with rich embeds
 
-### Planned Features
-
-#### Multi-Tenant Support
-- Support multiple Payhip accounts per bot instance
-- Per-tenant webhook endpoints
-- Per-tenant Discord channel routing
-- Tenant-specific configuration management
-
-#### Web Dashboard
-- Real-time sales monitoring
-- Analytics and reporting
-- Configuration management UI
-- Webhook endpoint management
-- Bot status and health monitoring
-
-#### Discord Commands
+# Discord Commands
 - `/sales` - View recent sales
 - `/stats` - View basic sales statistics
 - `/config` - Configure bot settings (admin only)
 - `/test` - Send test webhook notification
 - `/help` - Display available commands
+
+
+### Planned Features
+
+#### Multi-Tenant Support (Version 3 Addition)
+- Support multiple Payhip accounts per bot instance
+- Per-tenant webhook endpoints
+- Per-tenant Discord channel routing
+- Tenant-specific configuration management
+
+#### Web Dashboard (Version 3 Addition)
+- Real-time sales monitoring
+- Analytics and reporting
+- Configuration management UI
+- Webhook endpoint management
+- Bot status and health monitoring
 
 #### Notification Enhancements
 - Customer email privacy options

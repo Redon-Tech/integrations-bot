@@ -1,6 +1,6 @@
 {
   "name": "payhip-sales-integration",
-  "version": "dev-0.1.0",
+  "version": "dev-2.0.0",
   "description": "Discord bot for Payhip webhook notifications - receive sales data and post to Discord channels",
   "main": "src/bot/Handler.js",
   "scripts": {
