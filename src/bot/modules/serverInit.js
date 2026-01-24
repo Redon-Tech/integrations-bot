@@ -37,9 +37,24 @@ function serverInit(botClient) {
 
             botLogger.logEvent(`Received webhook event: ${eventType}`);
 
-            const channel = await client.channels.fetch(salesChannelId);
+            let channelId;
+            switch (eventType) {
+                case "paid":
+                    channelId = salesChannelId;
+                    break;
+                case "subscription.created":
+                    channelId = subscriptionsChannelId;
+                    break;
+                case "subscription.deleted":
+                    channelId = subscriptionsChannelId;
+                    break;
+                case "refunded":
+                    channelId = refundsChannelId;
+                    break;
+            }
+            const channel = await client.channels.fetch(channelId);
             if (!channel) {
-                botLogger.logError(`Channel with ID ${salesChannelId} not found.`);
+                botLogger.logError(`Channel with ID ${channelId} not found.`);
                 res.status(500).send('Channel not found');
                 return;
             }
