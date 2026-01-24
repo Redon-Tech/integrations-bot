@@ -1,3 +1,16 @@
 {
-  "comment": "Placeholder Comment"
+  "discordConfig": {
+    "discordChannelConfig": {
+      "salesChannelConfig": "",
+      "refundsChannelConfig": "",
+      "subscriptionsChannelConfig": ""
+    }
+  },
+  "payhipConfig": {
+    "eventTypes": {
+      "newSale": true,
+      "refund": true,
+      "subscriptions": true
+    }
+  }
 }
