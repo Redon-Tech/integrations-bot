@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const config = require('../../config/config.json');
 
 const testPayloads = {
@@ -121,7 +121,7 @@ module.exports = {
         const eventType = interaction.options.getString('type');
         const payload = testPayloads[eventType];
 
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         try {
             const webhookPort = config.webhookConfig.webhookPort;
