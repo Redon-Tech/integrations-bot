@@ -28,7 +28,7 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 - `/config` - Configure bot settings (admin only)
 - `/test` - Send test webhook notification
 - `/help` - Display available commands
-
+- `/botinfo` - Displays information about the bot
 
 ### Planned Features
 
