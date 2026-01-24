@@ -54,6 +54,92 @@ function createEmbed(eventType, data) {
         .setDescription(description)
         .setColor(saleColor);
       break;
+
+    case "subscription.created": // New Subscription
+      const subStartDate = data.date_subscription_started ? new Date(data.date_subscription_started * 1000).toLocaleString() : "N/A";
+      const customerName = `${data.customer_first_name || ""} ${data.customer_last_name || ""}`.trim() || "N/A";
+
+      const subCreatedDescription = [
+        `**Customer:** ${customerName}`,
+        `**Email:** ${data.customer_email || "N/A"}`,
+        `**Product:** ${data.product_name || "N/A"}`,
+        `**Plan:** ${data.plan_name || "N/A"}`,
+        `**Status:** ${data.status || "N/A"}`,
+        `**Started:** ${subStartDate}`,
+        `**Subscription ID:** ${data.subscription_id || "N/A"}`,
+      ].join("\n");
+
+      embed
+        .setTitle("New Subscription Created")
+        .setDescription(subCreatedDescription)
+        .setColor(subscriptionColor);
+      break;
+
+    case "subscription.deleted": // Subscription Canceled
+      const subDeleteStartDate = data.date_subscription_started ? new Date(data.date_subscription_started * 1000).toLocaleString() : "N/A";
+      const subDeleteEndDate = data.date_subscription_deleted ? new Date(data.date_subscription_deleted * 1000).toLocaleString() : "N/A";
+      const customerDeleteName = `${data.customer_first_name || ""} ${data.customer_last_name || ""}`.trim() || "N/A";
+
+      const subDeletedDescription = [
+        `**Customer:** ${customerDeleteName}`,
+        `**Email:** ${data.customer_email || "N/A"}`,
+        `**Product:** ${data.product_name || "N/A"}`,
+        `**Plan:** ${data.plan_name || "N/A"}`,
+        `**Status:** ${data.status || "N/A"}`,
+        `**Started:** ${subDeleteStartDate}`,
+        `**Canceled:** ${subDeleteEndDate}`,
+        `**Subscription ID:** ${data.subscription_id || "N/A"}`,
+      ].join("\n");
+
+      embed
+        .setTitle("Subscription Canceled")
+        .setDescription(subDeletedDescription)
+        .setColor(subscriptionColor);
+      break;
+
+    case "refunded": // Refund Issued
+      const refundPaymentType = data.payment_type === "card" ? "stripe" : data.payment_type;
+      const refundVatApplied = data.vat_applied ? "Yes" : "No";
+
+      let refundProductsList = "";
+      if (data.items && data.items.length > 0) {
+        refundProductsList = data.items.map((item) => {
+          let productName = item.product_name;
+          if (item.on_sale) {
+            productName += " (SALE)";
+          }
+          return productName + ",";
+        }).join("\n");
+      } else {
+        refundProductsList = "N/A";
+      }
+
+      const refundAmount = data.amount_refunded || data.price;
+
+      const dateCreated = data.date_created ? new Date(data.date_created * 1000).toLocaleString() : "N/A";
+      const dateRefunded = data.date_refunded ? new Date(data.date_refunded * 1000).toLocaleString() : "N/A";
+
+      const refundDescription = [
+        `**Products:**\n${refundProductsList}`,
+        `**Refund Amount:** $${refundAmount ? (refundAmount / 100).toFixed(2) : "0.00"} ${data.currency || "USD"}`,
+        `**Payment Type:** ${refundPaymentType}`,
+        `**VAT Applied:** ${refundVatApplied}`,
+        `**Original Purchase:** ${dateCreated}`,
+        `**Refund Date:** ${dateRefunded}`,
+        `**Transaction ID:** ${data.id || "N/A"}`,
+      ].join("\n");
+
+      embed
+        .setTitle("Refund Issued")
+        .setDescription(refundDescription)
+        .setColor(refundColor);
+      break;
+    default:
+      embed
+        .setTitle("Unknown Event")
+        .setDescription("An unknown event type was received.")
+        .setColor(0x808080);
+      break;
   }
   return embed;
 }
