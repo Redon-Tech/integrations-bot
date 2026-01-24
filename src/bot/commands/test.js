@@ -12,7 +12,7 @@ const testPayloads = {
         coupons: [{ code: "SAVE20", percentage: 20, amount: 300 }],
         items: [{
             product_id: "1001",
-            product_name: "Test Product (SALE)",
+            product_name: "Test Product",
             product_key: "TEST1",
             product_permalink: "https://payhip.com/b/TEST1",
             quantity: "1",
