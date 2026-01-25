@@ -33,6 +33,10 @@ module.exports = {
     }
   },
   async execute(interaction) {
+    if (!interaction.memberPermissions.has('Administrator')) {
+      await interaction.reply({ content: 'You must be an administrator to use this command.' });
+      return;
+    }
     const sectionName = interaction.options.getString('section');
     const keyList = getConfigKeys(sectionName);
     if (!keyList.length) {
