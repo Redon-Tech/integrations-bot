@@ -80,10 +80,17 @@ class SalesTracker {
     trackSale(webhookData) {
         try {
             // Fallbacks and mapping for Payhip webhook
+            // Only store product_name(s) in products field
+            let productNames = null;
+            if (webhookData.products) {
+                productNames = webhookData.products;
+            } else if (Array.isArray(webhookData.items)) {
+                productNames = webhookData.items.map(item => item.product_name).join(', ');
+            }
             const sale = {
                 id: webhookData.transaction_id || webhookData.id || Date.now().toString(),
                 type: 'sale',
-                products: webhookData.products ? webhookData.products : (webhookData.items ? JSON.stringify(webhookData.items) : null),
+                products: productNames,
                 amount: webhookData.total_price !== undefined ? parseFloat(webhookData.total_price) : (webhookData.price !== undefined ? parseFloat(webhookData.price) / 100 : 0),
                 currency: webhookData.currency || 'USD',
                 customer: webhookData.customer || webhookData.email || null,
