@@ -17,6 +17,12 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 - Coupon discount calculations
 - Payment type tracking
 - Multi-product display support
+- Customizable embed colors per event type
+- **SQL-based database with external schema and query files**
+- **Config command with live reload (no restart required)**
+- **Hex color codes for embed configuration**
+- **CamelCase naming convention throughout codebase**
+- **Admin tools for config and stats**
 
 ### In Development
 - **Simple Integration** - Single API, single tenant (server/payhip)
@@ -25,29 +31,26 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 # Discord Commands
 - `/sales` - View recent sales
 - `/stats` - View basic sales statistics
-- `/config` - Configure bot settings (admin only)
+- `/config` - Configure bot settings (admin only, live reload)
+- `/configoptions` - View available config keys for a section
 - `/test` - Send test webhook notification
 - `/help` - Display available commands
 - `/botinfo` - Displays information about the bot
 
 ### Planned Features
 
-#### Multi-Tenant Support (Version 3 Addition)
+#### Multi-Tenant Support (Version 2 Addition)
 - Support multiple Payhip accounts per bot instance
 - Per-tenant webhook endpoints
 - Per-tenant Discord channel routing
 - Tenant-specific configuration management
 
-#### Web Dashboard (Version 3 Addition)
+#### Web Dashboard (Version 2 Addition)
 - Real-time sales monitoring
 - Analytics and reporting
 - Configuration management UI
 - Webhook endpoint management
 - Bot status and health monitoring
-
-#### Notification Enhancements
-- Customer email privacy options
-- Customizable embed colors per event type
 
 ## Current Features
 
@@ -60,5 +63,9 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
   - Transaction IDs
   - VAT status
 - **Multi-Product Support**: Handles single and multi-item purchases
-- **Configurable**: JSON-based configuration for channels, colors, and webhook settings
+- **Configurable**: JSON-based configuration for channels, hex colors, and webhook settings
+- **Live Config Reload**: Change config from Discord without restarting the bot
+- **SQL Database**: All sales, refunds, and subscriptions tracked in SQLite with external SQL files
+- **CamelCase Naming**: Consistent camelCase for all local variables and config keys
 - **Logging**: Comprehensive logging with timestamps and error tracking
+- **Admin Tools**: Slash commands for config, stats, and options
