@@ -3,6 +3,18 @@ const botLogger = require("../modules/botLogger");
 module.exports = {
   name: "interactionCreate",
   async execute(interaction) {
+    if (interaction.isAutocomplete()) {
+      const command = interaction.client.commands.get(interaction.commandName);
+      if (command && typeof command.autocomplete === "function") {
+        try {
+          await command.autocomplete(interaction);
+        } catch (error) {
+          botLogger.logError(`Autocomplete for /${interaction.commandName} failed`, error);
+        }
+      }
+      return;
+    }
+
     if (!interaction.isChatInputCommand()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);
