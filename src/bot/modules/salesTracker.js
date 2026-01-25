@@ -239,33 +239,75 @@ class SalesTracker {
         if (period === 'today') {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            const periodData = this.db.prepare(`
+            const salesData = this.db.prepare(`
                 SELECT COUNT(*) as count, SUM(amount) as revenue
                 FROM sales
                 WHERE type = 'sale' AND date >= @startDate
             `).get({ startDate: today.toISOString() });
-            stats.periodSales = periodData.count || 0;
-            stats.periodRevenue = periodData.revenue || 0;
+            const refundData = this.db.prepare(`
+                SELECT COUNT(*) as count, SUM(amount) as refunded
+                FROM sales
+                WHERE type = 'refund' AND date >= @startDate
+            `).get({ startDate: today.toISOString() });
+            const subscriptionData = this.db.prepare(`
+                SELECT COUNT(*) as count
+                FROM subscriptions
+                WHERE type = 'subscription_created' AND date >= @startDate
+            `).get({ startDate: today.toISOString() });
+            
+            stats.periodSales = salesData.count || 0;
+            stats.periodRevenue = salesData.revenue || 0;
+            stats.periodRefunds = refundData.count || 0;
+            stats.periodRefunded = refundData.refunded || 0;
+            stats.periodSubscriptions = subscriptionData.count || 0;
         } else if (period === 'week') {
             const weekAgo = new Date();
             weekAgo.setDate(weekAgo.getDate() - 7);
-            const periodData = this.db.prepare(`
+            const salesData = this.db.prepare(`
                 SELECT COUNT(*) as count, SUM(amount) as revenue
                 FROM sales
                 WHERE type = 'sale' AND date >= @startDate
             `).get({ startDate: weekAgo.toISOString() });
-            stats.periodSales = periodData.count || 0;
-            stats.periodRevenue = periodData.revenue || 0;
+            const refundData = this.db.prepare(`
+                SELECT COUNT(*) as count, SUM(amount) as refunded
+                FROM sales
+                WHERE type = 'refund' AND date >= @startDate
+            `).get({ startDate: weekAgo.toISOString() });
+            const subscriptionData = this.db.prepare(`
+                SELECT COUNT(*) as count
+                FROM subscriptions
+                WHERE type = 'subscription_created' AND date >= @startDate
+            `).get({ startDate: weekAgo.toISOString() });
+            
+            stats.periodSales = salesData.count || 0;
+            stats.periodRevenue = salesData.revenue || 0;
+            stats.periodRefunds = refundData.count || 0;
+            stats.periodRefunded = refundData.refunded || 0;
+            stats.periodSubscriptions = subscriptionData.count || 0;
         } else if (period === 'month') {
             const monthAgo = new Date();
             monthAgo.setDate(monthAgo.getDate() - 30);
-            const periodData = this.db.prepare(`
+            const salesData = this.db.prepare(`
                 SELECT COUNT(*) as count, SUM(amount) as revenue
                 FROM sales
                 WHERE type = 'sale' AND date >= @startDate
             `).get({ startDate: monthAgo.toISOString() });
-            stats.periodSales = periodData.count || 0;
-            stats.periodRevenue = periodData.revenue || 0;
+            const refundData = this.db.prepare(`
+                SELECT COUNT(*) as count, SUM(amount) as refunded
+                FROM sales
+                WHERE type = 'refund' AND date >= @startDate
+            `).get({ startDate: monthAgo.toISOString() });
+            const subscriptionData = this.db.prepare(`
+                SELECT COUNT(*) as count
+                FROM subscriptions
+                WHERE type = 'subscription_created' AND date >= @startDate
+            `).get({ startDate: monthAgo.toISOString() });
+            
+            stats.periodSales = salesData.count || 0;
+            stats.periodRevenue = salesData.revenue || 0;
+            stats.periodRefunds = refundData.count || 0;
+            stats.periodRefunded = refundData.refunded || 0;
+            stats.periodSubscriptions = subscriptionData.count || 0;
         }
 
         return stats;

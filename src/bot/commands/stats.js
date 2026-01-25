@@ -1,6 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const salesTracker = require('../modules/salesTracker');
 
+// Helper function to format currency with commas
+function formatCurrency(amount) {
+    return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('stats')
@@ -20,95 +25,195 @@ module.exports = {
         const period = interaction.options.getString('period') || 'all';
         const stats = salesTracker.getStats(period);
         const topProducts = salesTracker.getTopProducts(5);
+        
+        // Get total count from database
+        const totalCount = salesTracker.db.prepare('SELECT COUNT(*) as count FROM sales').get().count;
 
         const embed = new EmbedBuilder()
             .setColor(0x0099FF)
-            .setTitle(`📈 Sales Statistics`)
             .setDescription(period === 'all' ? 'All Time Statistics' : 
                            period === 'today' ? 'Today\'s Statistics' :
                            period === 'week' ? 'This Week\'s Statistics' :
                            'This Month\'s Statistics')
+            .setFooter({ text: `Data based on ${totalCount} tracked transactions`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
             .setTimestamp();
 
-        // Overall stats
-        if (period === 'all') {
-            embed.addFields(
-                { 
-                    name: '💰 Total Sales', 
-                    value: `${stats.totalSales} sales\n$${stats.totalRevenue.toFixed(2)}`, 
-                    inline: true 
-                },
-                { 
-                    name: '⚠️ Refunds', 
-                    value: `${stats.totalRefunds} refunds\n$${stats.refundedAmount.toFixed(2)}`, 
-                    inline: true 
-                },
-                { 
-                    name: '💵 Net Revenue', 
-                    value: `$${stats.netRevenue.toFixed(2)}`, 
-                    inline: true 
-                },
-                { 
-                    name: '📊 Average Order Value', 
-                    value: `$${stats.averageOrderValue.toFixed(2)}`, 
-                    inline: true 
-                },
-                { 
-                    name: '📉 Refund Rate', 
-                    value: `${stats.refundRate.toFixed(1)}%`, 
-                    inline: true 
-                },
-                { 
-                    name: '🔔 Subscriptions', 
-                    value: `${stats.subscriptions} active`, 
-                    inline: true 
-                }
-            );
-        } else {
-            // Period-specific stats
-            embed.addFields(
-                { 
-                    name: '💰 Sales', 
-                    value: `${stats.periodSales || 0} sales\n$${(stats.periodRevenue || 0).toFixed(2)}`, 
-                    inline: true 
-                },
-                { 
-                    name: '📊 Average Order', 
-                    value: stats.periodSales > 0 
-                        ? `$${(stats.periodRevenue / stats.periodSales).toFixed(2)}`
-                        : '$0.00', 
-                    inline: true 
-                },
-                { 
-                    name: '\u200B', 
-                    value: '\u200B', 
-                    inline: true 
-                }
-            );
+        switch (period) {
+            case "today":
+                embed.setTitle('Sales Statistics - Today');
 
-            // Add all-time comparison
-            embed.addFields(
-                { 
-                    name: '📈 All-Time Comparison', 
-                    value: `**Total Sales:** ${stats.totalSales}\n**Total Revenue:** $${stats.totalRevenue.toFixed(2)}\n**Net Revenue:** $${stats.netRevenue.toFixed(2)}`, 
-                    inline: false 
-                }
-            );
+                embed.addFields(
+                    {
+                        name: `Total Sales for ${new Date().toLocaleDateString()}`,
+                        value: `${stats.periodSales || 0} sales\n$${formatCurrency(stats.periodRevenue || 0)}`,
+                        inline: true
+
+                    },
+                    { 
+                        name: `Total Refunds for ${new Date().toLocaleDateString()}`, 
+                        value: `${stats.periodRefunds || 0} refunds\n$${formatCurrency(stats.periodRefunded || 0)}`, 
+                        inline: true
+                    },
+                    {
+                        name: `Net Revenue for ${new Date().toLocaleDateString()}`,
+                        value: `$${formatCurrency((stats.periodRevenue || 0) - (stats.periodRefunded || 0))}`,
+                        inline: true
+                    },
+                    {
+                        name: `Average Order Value for ${new Date().toLocaleDateString()}`,
+                        value: stats.periodSales > 0 
+                            ? `$${formatCurrency(stats.periodRevenue / stats.periodSales)}`
+                            : '$0.00',
+                        inline: true
+                    },
+                    {
+                        name: `Refund Rate for ${new Date().toLocaleDateString()}`,
+                        value: stats.periodSales > 0 
+                            ? `${((stats.periodRefunds || 0) / stats.periodSales * 100).toFixed(1)}%` 
+                            : '0.0%',
+                        inline: true
+                    },
+                    {
+                        name: `Number of Subscriptions for ${new Date().toLocaleDateString()}`,
+                        value: `${stats.periodSubscriptions || 0} active`,
+                        inline: true
+                    }
+                );
+                
+                break;
+            case "week":
+                embed.setTitle('Sales Statistics - This Week');
+                
+                const weekStart = new Date();
+                weekStart.setDate(weekStart.getDate() - 7);
+                
+                embed.addFields(
+                    {
+                        name: `Total Sales (Last 7 Days)`,
+                        value: `${stats.periodSales || 0} sales\n$${formatCurrency(stats.periodRevenue || 0)}`,
+                        inline: true
+                    },
+                    { 
+                        name: `Total Refunds (Last 7 Days)`, 
+                        value: `${stats.periodRefunds || 0} refunds\n$${formatCurrency(stats.periodRefunded || 0)}`, 
+                        inline: true
+                    },
+                    {
+                        name: `Net Revenue (Last 7 Days)`,
+                        value: `$${formatCurrency((stats.periodRevenue || 0) - (stats.periodRefunded || 0))}`,
+                        inline: true
+                    },
+                    {
+                        name: `Average Order Value (Last 7 Days)`,
+                        value: stats.periodSales > 0 
+                            ? `$${formatCurrency(stats.periodRevenue / stats.periodSales)}`
+                            : '$0.00',
+                        inline: true
+                    },
+                    {
+                        name: `Refund Rate (Last 7 Days)`,
+                        value: stats.periodSales > 0 
+                            ? `${((stats.periodRefunds || 0) / stats.periodSales * 100).toFixed(1)}%` 
+                            : '0.0%',
+                        inline: true
+                    },
+                    {
+                        name: `Number of Subscriptions (Last 7 Days)`,
+                        value: `${stats.periodSubscriptions || 0} new`,
+                        inline: true
+                    }
+                );
+                
+                break;
+            case "month":
+                embed.setTitle('Sales Statistics - This Month');
+                
+                embed.addFields(
+                    {
+                        name: `Total Sales (Last 30 Days)`,
+                        value: `${stats.periodSales || 0} sales\n$${formatCurrency(stats.periodRevenue || 0)}`,
+                        inline: true
+                    },
+                    { 
+                        name: `Total Refunds (Last 30 Days)`, 
+                        value: `${stats.periodRefunds || 0} refunds\n$${formatCurrency(stats.periodRefunded || 0)}`, 
+                        inline: true
+                    },
+                    {
+                        name: `Net Revenue (Last 30 Days)`,
+                        value: `$${formatCurrency((stats.periodRevenue || 0) - (stats.periodRefunded || 0))}`,
+                        inline: true
+                    },
+                    {
+                        name: `Average Order Value (Last 30 Days)`,
+                        value: stats.periodSales > 0 
+                            ? `$${formatCurrency(stats.periodRevenue / stats.periodSales)}`
+                            : '$0.00',
+                        inline: true
+                    },
+                    {
+                        name: `Refund Rate (Last 30 Days)`,
+                        value: stats.periodSales > 0 
+                            ? `${((stats.periodRefunds || 0) / stats.periodSales * 100).toFixed(1)}%` 
+                            : '0.0%',
+                        inline: true
+                    },
+                    {
+                        name: `Number of Subscriptions (Last 30 Days)`,
+                        value: `${stats.periodSubscriptions || 0} new`,
+                        inline: true
+                    }
+                );
+                
+                break;
+            default:
+                // All time stats
+                embed.addFields(
+                    {
+                        name: `Total Sales (All Time)`,
+                        value: `${stats.totalSales || 0} sales\n$${formatCurrency(stats.totalRevenue || 0)}`,
+                        inline: true
+                    },
+                    { 
+                        name: `Total Refunds (All Time)`, 
+                        value: `${stats.totalRefunds || 0} refunds\n$${formatCurrency(stats.refundedAmount || 0)}`, 
+                        inline: true
+                    },
+                    {
+                        name: `Net Revenue (All Time)`,
+                        value: `$${formatCurrency(stats.netRevenue || 0)}`,
+                        inline: true
+                    },
+                    {
+                        name: `Average Order Value (All Time)`,
+                        value: `$${formatCurrency(stats.averageOrderValue || 0)}`,
+                        inline: true
+                    },
+                    {
+                        name: `Refund Rate (All Time)`,
+                        value: `${(stats.refundRate || 0).toFixed(1)}%`,
+                        inline: true
+                    },
+                    {
+                        name: `Number of Subscriptions (All Time)`,
+                        value: `${stats.subscriptions || 0} total`,
+                        inline: true
+                    }
+                );
+                
+                break;
         }
 
-        // Top products
         if (topProducts.length > 0) {
             const topProductsText = topProducts
                 .map((p, i) => `${i + 1}. **${p.product}** - ${p.count} sales`)
                 .join('\n');
             embed.addFields({ 
-                name: '🏆 Top Products', 
+                name: 'Top Products', 
                 value: topProductsText, 
                 inline: false 
             });
         }
-
-        embed.setFooter({ text: `Data based on ${salesTracker.data.sales.length} tracked transactions` });
 
         await interaction.reply({ embeds: [embed] });
     },
