@@ -12,6 +12,9 @@
       "subscriptions": true
     }
   },
+  "databaseConfig": {
+    "maxSales": 200
+  },
   "webhookConfig": {
     "webhookPort": 3000,
     "webhookPath": "/webhook/payhip",

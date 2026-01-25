@@ -2,15 +2,19 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 const botLogger = require('./botLogger');
+const config = require('../../config/config.json');
 
 const DATA_DIR = path.join(__dirname, '../../data');
+const SCHEMA_DIR = path.join(DATA_DIR, 'schema');
+const QUERIES_DIR = path.join(DATA_DIR, 'queries');
 const DB_FILE = path.join(DATA_DIR, 'sales.db');
-const MAX_SALES = 200;
 
 class SalesTracker {
     constructor() {
+        this.maxSales = config.databaseConfig?.maxSales || 200;
         this.ensureDataDirectory();
         this.db = new Database(DB_FILE);
+        this.queries = this.loadQueries();
         this.initializeDatabase();
     }
 
@@ -21,62 +25,54 @@ class SalesTracker {
         }
     }
 
+    loadQueries() {
+        const queries = {};
+        const queryFiles = [
+            'insert_sale',
+            'insert_refund',
+            'insert_subscription',
+            'update_stats_sale',
+            'update_stats_refund',
+            'update_stats_subscription',
+            'get_all_stats',
+            'get_period_sales',
+            'get_period_refunds',
+            'get_period_subscriptions',
+            'get_products_for_top_list',
+            'cleanup_old_records'
+        ];
+
+        queryFiles.forEach(file => {
+            const queryPath = path.join(QUERIES_DIR, `${file}.sql`);
+            if (fs.existsSync(queryPath)) {
+                queries[file] = fs.readFileSync(queryPath, 'utf-8').trim();
+            } else {
+                botLogger.log(`Warning: Query file not found: ${file}.sql`, 'WARN');
+            }
+        });
+
+        return queries;
+    }
+
     initializeDatabase() {
-        // Create sales table
-        this.db.exec(`
-            CREATE TABLE IF NOT EXISTS sales (
-                id TEXT PRIMARY KEY,
-                type TEXT NOT NULL,
-                products TEXT,
-                amount REAL NOT NULL,
-                currency TEXT DEFAULT 'USD',
-                customer TEXT,
-                date TEXT NOT NULL,
-                coupon TEXT,
-                discount REAL DEFAULT 0,
-                original_date TEXT
-            )
-        `);
+        // Execute SQL schema files
+        const schemaFiles = [
+            'create_sales_table.sql',
+            'create_subscriptions_table.sql',
+            'create_stats_table.sql',
+            'create_indexes.sql'
+        ];
 
-        // Create subscriptions table
-        this.db.exec(`
-            CREATE TABLE IF NOT EXISTS subscriptions (
-                id TEXT PRIMARY KEY,
-                type TEXT NOT NULL,
-                product TEXT,
-                plan TEXT,
-                customer TEXT,
-                date TEXT NOT NULL
-            )
-        `);
-
-        // Create stats table
-        this.db.exec(`
-            CREATE TABLE IF NOT EXISTS stats (
-                id INTEGER PRIMARY KEY CHECK (id = 1),
-                total_sales INTEGER DEFAULT 0,
-                total_revenue REAL DEFAULT 0,
-                total_refunds INTEGER DEFAULT 0,
-                refunded_amount REAL DEFAULT 0,
-                subscriptions INTEGER DEFAULT 0
-            )
-        `);
-
-        // Initialize stats if not exists
-        const stats = this.db.prepare('SELECT * FROM stats WHERE id = 1').get();
-        if (!stats) {
-            this.db.prepare(`
-                INSERT INTO stats (id, total_sales, total_revenue, total_refunds, refunded_amount, subscriptions)
-                VALUES (1, 0, 0, 0, 0, 0)
-            `).run();
-        }
-
-        // Create indexes for better performance
-        this.db.exec(`
-            CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(date);
-            CREATE INDEX IF NOT EXISTS idx_sales_type ON sales(type);
-            CREATE INDEX IF NOT EXISTS idx_subscriptions_date ON subscriptions(date);
-        `);
+        schemaFiles.forEach(file => {
+            const schemaPath = path.join(SCHEMA_DIR, file);
+            if (fs.existsSync(schemaPath)) {
+                const sql = fs.readFileSync(schemaPath, 'utf-8');
+                this.db.exec(sql);
+                botLogger.log(`Executed schema: ${file}`);
+            } else {
+                botLogger.log(`Warning: Schema file not found: ${file}`, 'WARN');
+            }
+        });
 
         botLogger.log('SQLite database initialized');
     }
@@ -95,18 +91,10 @@ class SalesTracker {
         };
 
         // Insert sale
-        this.db.prepare(`
-            INSERT OR REPLACE INTO sales (id, type, products, amount, currency, customer, date, coupon, discount)
-            VALUES (@id, @type, @products, @amount, @currency, @customer, @date, @coupon, @discount)
-        `).run(sale);
+        this.db.prepare(this.queries.insert_sale).run(sale);
 
         // Update stats
-        this.db.prepare(`
-            UPDATE stats 
-            SET total_sales = total_sales + 1,
-                total_revenue = total_revenue + @amount
-            WHERE id = 1
-        `).run({ amount: sale.amount });
+        this.db.prepare(this.queries.update_stats_sale).run({ amount: sale.amount });
 
         // Clean up old sales (keep only MAX_SALES most recent)
         this.cleanupOldRecords('sales');
@@ -127,18 +115,10 @@ class SalesTracker {
         };
 
         // Insert refund
-        this.db.prepare(`
-            INSERT OR REPLACE INTO sales (id, type, products, amount, currency, customer, date, original_date)
-            VALUES (@id, @type, @products, @amount, @currency, @customer, @date, @original_date)
-        `).run(refund);
+        this.db.prepare(this.queries.insert_refund).run(refund);
 
         // Update stats
-        this.db.prepare(`
-            UPDATE stats 
-            SET total_refunds = total_refunds + 1,
-                refunded_amount = refunded_amount + @amount
-            WHERE id = 1
-        `).run({ amount: refund.amount });
+        this.db.prepare(this.queries.update_stats_refund).run({ amount: refund.amount });
 
         // Clean up old sales
         this.cleanupOldRecords('sales');
@@ -157,18 +137,11 @@ class SalesTracker {
         };
 
         // Insert subscription
-        this.db.prepare(`
-            INSERT OR REPLACE INTO subscriptions (id, type, product, plan, customer, date)
-            VALUES (@id, @type, @product, @plan, @customer, @date)
-        `).run(subscription);
+        this.db.prepare(this.queries.insert_subscription).run(subscription);
 
         // Update stats if new subscription
         if (eventType === 'subscription.created') {
-            this.db.prepare(`
-                UPDATE stats 
-                SET subscriptions = subscriptions + 1
-                WHERE id = 1
-            `).run();
+            this.db.prepare(this.queries.update_stats_subscription).run();
         }
 
         // Clean up old subscriptions
@@ -179,16 +152,10 @@ class SalesTracker {
 
     cleanupOldRecords(table) {
         const count = this.db.prepare(`SELECT COUNT(*) as count FROM ${table}`).get().count;
-        if (count > MAX_SALES) {
-            const toDelete = count - MAX_SALES;
-            this.db.prepare(`
-                DELETE FROM ${table} 
-                WHERE id IN (
-                    SELECT id FROM ${table} 
-                    ORDER BY date ASC 
-                    LIMIT @toDelete
-                )
-            `).run({ toDelete });
+        if (count > this.maxSales) {
+            const toDelete = count - this.maxSales;
+            const query = this.queries.cleanup_old_records.replace(/{table}/g, table);
+            this.db.prepare(query).run({ toDelete });
         }
     }
 
@@ -218,7 +185,7 @@ class SalesTracker {
     }
 
     getStats(period = 'all') {
-        const statsRow = this.db.prepare('SELECT * FROM stats WHERE id = 1').get();
+        const statsRow = this.db.prepare(this.queries.get_all_stats).get();
         
         const stats = {
             totalSales: statsRow.total_sales,
@@ -239,21 +206,9 @@ class SalesTracker {
         if (period === 'today') {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            const salesData = this.db.prepare(`
-                SELECT COUNT(*) as count, SUM(amount) as revenue
-                FROM sales
-                WHERE type = 'sale' AND date >= @startDate
-            `).get({ startDate: today.toISOString() });
-            const refundData = this.db.prepare(`
-                SELECT COUNT(*) as count, SUM(amount) as refunded
-                FROM sales
-                WHERE type = 'refund' AND date >= @startDate
-            `).get({ startDate: today.toISOString() });
-            const subscriptionData = this.db.prepare(`
-                SELECT COUNT(*) as count
-                FROM subscriptions
-                WHERE type = 'subscription_created' AND date >= @startDate
-            `).get({ startDate: today.toISOString() });
+            const salesData = this.db.prepare(this.queries.get_period_sales).get({ startDate: today.toISOString() });
+            const refundData = this.db.prepare(this.queries.get_period_refunds).get({ startDate: today.toISOString() });
+            const subscriptionData = this.db.prepare(this.queries.get_period_subscriptions).get({ startDate: today.toISOString() });
             
             stats.periodSales = salesData.count || 0;
             stats.periodRevenue = salesData.revenue || 0;
@@ -263,21 +218,9 @@ class SalesTracker {
         } else if (period === 'week') {
             const weekAgo = new Date();
             weekAgo.setDate(weekAgo.getDate() - 7);
-            const salesData = this.db.prepare(`
-                SELECT COUNT(*) as count, SUM(amount) as revenue
-                FROM sales
-                WHERE type = 'sale' AND date >= @startDate
-            `).get({ startDate: weekAgo.toISOString() });
-            const refundData = this.db.prepare(`
-                SELECT COUNT(*) as count, SUM(amount) as refunded
-                FROM sales
-                WHERE type = 'refund' AND date >= @startDate
-            `).get({ startDate: weekAgo.toISOString() });
-            const subscriptionData = this.db.prepare(`
-                SELECT COUNT(*) as count
-                FROM subscriptions
-                WHERE type = 'subscription_created' AND date >= @startDate
-            `).get({ startDate: weekAgo.toISOString() });
+            const salesData = this.db.prepare(this.queries.get_period_sales).get({ startDate: weekAgo.toISOString() });
+            const refundData = this.db.prepare(this.queries.get_period_refunds).get({ startDate: weekAgo.toISOString() });
+            const subscriptionData = this.db.prepare(this.queries.get_period_subscriptions).get({ startDate: weekAgo.toISOString() });
             
             stats.periodSales = salesData.count || 0;
             stats.periodRevenue = salesData.revenue || 0;
@@ -287,21 +230,9 @@ class SalesTracker {
         } else if (period === 'month') {
             const monthAgo = new Date();
             monthAgo.setDate(monthAgo.getDate() - 30);
-            const salesData = this.db.prepare(`
-                SELECT COUNT(*) as count, SUM(amount) as revenue
-                FROM sales
-                WHERE type = 'sale' AND date >= @startDate
-            `).get({ startDate: monthAgo.toISOString() });
-            const refundData = this.db.prepare(`
-                SELECT COUNT(*) as count, SUM(amount) as refunded
-                FROM sales
-                WHERE type = 'refund' AND date >= @startDate
-            `).get({ startDate: monthAgo.toISOString() });
-            const subscriptionData = this.db.prepare(`
-                SELECT COUNT(*) as count
-                FROM subscriptions
-                WHERE type = 'subscription_created' AND date >= @startDate
-            `).get({ startDate: monthAgo.toISOString() });
+            const salesData = this.db.prepare(this.queries.get_period_sales).get({ startDate: monthAgo.toISOString() });
+            const refundData = this.db.prepare(this.queries.get_period_refunds).get({ startDate: monthAgo.toISOString() });
+            const subscriptionData = this.db.prepare(this.queries.get_period_subscriptions).get({ startDate: monthAgo.toISOString() });
             
             stats.periodSales = salesData.count || 0;
             stats.periodRevenue = salesData.revenue || 0;
@@ -314,9 +245,7 @@ class SalesTracker {
     }
 
     getTopProducts(limit = 5) {
-        const sales = this.db.prepare(`
-            SELECT products FROM sales WHERE type = 'sale' AND products IS NOT NULL
-        `).all();
+        const sales = this.db.prepare(this.queries.get_products_for_top_list).all();
 
         const productCounts = {};
         
