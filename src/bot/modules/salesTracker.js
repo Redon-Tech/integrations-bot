@@ -78,28 +78,35 @@ class SalesTracker {
     }
 
     trackSale(webhookData) {
-        const sale = {
-            id: webhookData.transaction_id || Date.now().toString(),
-            type: 'sale',
-            products: webhookData.products,
-            amount: parseFloat(webhookData.total_price),
-            currency: webhookData.currency || 'USD',
-            customer: webhookData.customer,
-            date: new Date().toISOString(),
-            coupon: webhookData.coupon || null,
-            discount: webhookData.discount ? parseFloat(webhookData.discount) : 0
-        };
+        try {
+            // Fallbacks and mapping for Payhip webhook
+            const sale = {
+                id: webhookData.transaction_id || webhookData.id || Date.now().toString(),
+                type: 'sale',
+                products: webhookData.products ? webhookData.products : (webhookData.items ? JSON.stringify(webhookData.items) : null),
+                amount: webhookData.total_price !== undefined ? parseFloat(webhookData.total_price) : (webhookData.price !== undefined ? parseFloat(webhookData.price) / 100 : 0),
+                currency: webhookData.currency || 'USD',
+                customer: webhookData.customer || webhookData.email || null,
+                date: new Date().toISOString(),
+                coupon: webhookData.coupon || (Array.isArray(webhookData.coupons) && webhookData.coupons.length > 0 ? webhookData.coupons[0].code : null),
+                discount: webhookData.discount !== undefined ? parseFloat(webhookData.discount) : (Array.isArray(webhookData.coupons) && webhookData.coupons.length > 0 ? (webhookData.coupons[0].amount || 0) / 100 : 0)
+            };
 
-        // Insert sale
-        this.db.prepare(this.queries.insertSale).run(sale);
+            // Insert sale
+            this.db.prepare(this.queries.insertSale).run(sale);
 
-        // Update stats
-        this.db.prepare(this.queries.updateStatsSale).run({ amount: sale.amount });
+            // Update stats
+            this.db.prepare(this.queries.updateStatsSale).run({ amount: sale.amount });
 
-        // Clean up old sales (keep only MAX_SALES most recent)
-        this.cleanupOldRecords('sales');
+            // Clean up old sales (keep only MAX_SALES most recent)
+            this.cleanupOldRecords('sales');
 
-        botLogger.log(`Tracked sale: ${sale.id} - $${sale.amount}`);
+            botLogger.log(`Tracked sale: ${sale.id} - $${sale.amount}`);
+        } catch (err) {
+            botLogger.logError('trackSale error', err);
+            botLogger.log('trackSale data: ' + JSON.stringify(webhookData), 'ERROR');
+            throw err;
+        }
     }
 
     trackRefund(webhookData) {
