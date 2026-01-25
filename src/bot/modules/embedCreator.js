@@ -61,7 +61,8 @@ function createEmbed(eventType, data) {
 
       const subCreatedDescription = [
         `**Customer:** ${customerName}`,
-        `**Email:** ${data.customer_email || "N/A"}`,
+        //`**Email:** ${data.customer_email || "N/A"}`,
+        `**Email: "HIDDEN FOR PRIVACY"`,
         `**Product:** ${data.product_name || "N/A"}`,
         `**Plan:** ${data.plan_name || "N/A"}`,
         `**Status:** ${data.status || "N/A"}`,
@@ -82,7 +83,8 @@ function createEmbed(eventType, data) {
 
       const subDeletedDescription = [
         `**Customer:** ${customerDeleteName}`,
-        `**Email:** ${data.customer_email || "N/A"}`,
+        //`**Email:** ${data.customer_email || "N/A"}`,
+        `**Email: "HIDDEN FOR PRIVACY"`,
         `**Product:** ${data.product_name || "N/A"}`,
         `**Plan:** ${data.plan_name || "N/A"}`,
         `**Status:** ${data.status || "N/A"}`,
