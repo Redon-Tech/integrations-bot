@@ -28,18 +28,18 @@ class SalesTracker {
     loadQueries() {
         const queries = {};
         const queryFiles = [
-            'insert_sale',
-            'insert_refund',
-            'insert_subscription',
-            'update_stats_sale',
-            'update_stats_refund',
-            'update_stats_subscription',
-            'get_all_stats',
-            'get_period_sales',
-            'get_period_refunds',
-            'get_period_subscriptions',
-            'get_products_for_top_list',
-            'cleanup_old_records'
+            'insertSale',
+            'insertRefund',
+            'insertSubscription',
+            'updateStatsSale',
+            'updateStatsRefund',
+            'updateStatsSubscription',
+            'getAllStats',
+            'getPeriodSales',
+            'getPeriodRefunds',
+            'getPeriodSubscriptions',
+            'getProductsForTopList',
+            'cleanupOldRecords'
         ];
 
         queryFiles.forEach(file => {
@@ -91,10 +91,10 @@ class SalesTracker {
         };
 
         // Insert sale
-        this.db.prepare(this.queries.insert_sale).run(sale);
+        this.db.prepare(this.queries.insertSale).run(sale);
 
         // Update stats
-        this.db.prepare(this.queries.update_stats_sale).run({ amount: sale.amount });
+        this.db.prepare(this.queries.updateStatsSale).run({ amount: sale.amount });
 
         // Clean up old sales (keep only MAX_SALES most recent)
         this.cleanupOldRecords('sales');
@@ -111,14 +111,14 @@ class SalesTracker {
             currency: webhookData.currency || 'USD',
             customer: webhookData.customer,
             date: new Date().toISOString(),
-            original_date: webhookData.date_purchased
+            originalDate: webhookData.date_purchased
         };
 
         // Insert refund
-        this.db.prepare(this.queries.insert_refund).run(refund);
+        this.db.prepare(this.queries.insertRefund).run(refund);
 
         // Update stats
-        this.db.prepare(this.queries.update_stats_refund).run({ amount: refund.amount });
+        this.db.prepare(this.queries.updateStatsRefund).run({ amount: refund.amount });
 
         // Clean up old sales
         this.cleanupOldRecords('sales');
@@ -137,11 +137,11 @@ class SalesTracker {
         };
 
         // Insert subscription
-        this.db.prepare(this.queries.insert_subscription).run(subscription);
+        this.db.prepare(this.queries.insertSubscription).run(subscription);
 
         // Update stats if new subscription
         if (eventType === 'subscription.created') {
-            this.db.prepare(this.queries.update_stats_subscription).run();
+            this.db.prepare(this.queries.updateStatsSubscription).run();
         }
 
         // Clean up old subscriptions
@@ -154,7 +154,7 @@ class SalesTracker {
         const count = this.db.prepare(`SELECT COUNT(*) as count FROM ${table}`).get().count;
         if (count > this.maxSales) {
             const toDelete = count - this.maxSales;
-            const query = this.queries.cleanup_old_records.replace(/{table}/g, table);
+            const query = this.queries.cleanupOldRecords.replace(/{table}/g, table);
             this.db.prepare(query).run({ toDelete });
         }
     }
@@ -185,20 +185,20 @@ class SalesTracker {
     }
 
     getStats(period = 'all') {
-        const statsRow = this.db.prepare(this.queries.get_all_stats).get();
+        const statsRow = this.db.prepare(this.queries.getAllStats).get();
         
         const stats = {
-            totalSales: statsRow.total_sales,
-            totalRevenue: statsRow.total_revenue,
-            totalRefunds: statsRow.total_refunds,
-            refundedAmount: statsRow.refunded_amount,
+            totalSales: statsRow.totalSales,
+            totalRevenue: statsRow.totalRevenue,
+            totalRefunds: statsRow.totalRefunds,
+            refundedAmount: statsRow.refundedAmount,
             subscriptions: statsRow.subscriptions,
-            netRevenue: statsRow.total_revenue - statsRow.refunded_amount,
-            averageOrderValue: statsRow.total_sales > 0 
-                ? statsRow.total_revenue / statsRow.total_sales 
+            netRevenue: statsRow.totalRevenue - statsRow.refundedAmount,
+            averageOrderValue: statsRow.totalSales > 0 
+                ? statsRow.totalRevenue / statsRow.totalSales 
                 : 0,
-            refundRate: statsRow.total_sales > 0
-                ? (statsRow.total_refunds / statsRow.total_sales) * 100
+            refundRate: statsRow.totalSales > 0
+                ? (statsRow.totalRefunds / statsRow.totalSales) * 100
                 : 0
         };
 
@@ -206,9 +206,9 @@ class SalesTracker {
         if (period === 'today') {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            const salesData = this.db.prepare(this.queries.get_period_sales).get({ startDate: today.toISOString() });
-            const refundData = this.db.prepare(this.queries.get_period_refunds).get({ startDate: today.toISOString() });
-            const subscriptionData = this.db.prepare(this.queries.get_period_subscriptions).get({ startDate: today.toISOString() });
+            const salesData = this.db.prepare(this.queries.getPeriodSales).get({ startDate: today.toISOString() });
+            const refundData = this.db.prepare(this.queries.getPeriodRefunds).get({ startDate: today.toISOString() });
+            const subscriptionData = this.db.prepare(this.queries.getPeriodSubscriptions).get({ startDate: today.toISOString() });
             
             stats.periodSales = salesData.count || 0;
             stats.periodRevenue = salesData.revenue || 0;
@@ -218,9 +218,9 @@ class SalesTracker {
         } else if (period === 'week') {
             const weekAgo = new Date();
             weekAgo.setDate(weekAgo.getDate() - 7);
-            const salesData = this.db.prepare(this.queries.get_period_sales).get({ startDate: weekAgo.toISOString() });
-            const refundData = this.db.prepare(this.queries.get_period_refunds).get({ startDate: weekAgo.toISOString() });
-            const subscriptionData = this.db.prepare(this.queries.get_period_subscriptions).get({ startDate: weekAgo.toISOString() });
+            const salesData = this.db.prepare(this.queries.getPeriodSales).get({ startDate: weekAgo.toISOString() });
+            const refundData = this.db.prepare(this.queries.getPeriodRefunds).get({ startDate: weekAgo.toISOString() });
+            const subscriptionData = this.db.prepare(this.queries.getPeriodSubscriptions).get({ startDate: weekAgo.toISOString() });
             
             stats.periodSales = salesData.count || 0;
             stats.periodRevenue = salesData.revenue || 0;
@@ -230,9 +230,9 @@ class SalesTracker {
         } else if (period === 'month') {
             const monthAgo = new Date();
             monthAgo.setDate(monthAgo.getDate() - 30);
-            const salesData = this.db.prepare(this.queries.get_period_sales).get({ startDate: monthAgo.toISOString() });
-            const refundData = this.db.prepare(this.queries.get_period_refunds).get({ startDate: monthAgo.toISOString() });
-            const subscriptionData = this.db.prepare(this.queries.get_period_subscriptions).get({ startDate: monthAgo.toISOString() });
+            const salesData = this.db.prepare(this.queries.getPeriodSales).get({ startDate: monthAgo.toISOString() });
+            const refundData = this.db.prepare(this.queries.getPeriodRefunds).get({ startDate: monthAgo.toISOString() });
+            const subscriptionData = this.db.prepare(this.queries.getPeriodSubscriptions).get({ startDate: monthAgo.toISOString() });
             
             stats.periodSales = salesData.count || 0;
             stats.periodRevenue = salesData.revenue || 0;
@@ -245,7 +245,7 @@ class SalesTracker {
     }
 
     getTopProducts(limit = 5) {
-        const sales = this.db.prepare(this.queries.get_products_for_top_list).all();
+        const sales = this.db.prepare(this.queries.getProductsForTopList).all();
 
         const productCounts = {};
         

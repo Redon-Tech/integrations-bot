@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS sales (
     date TEXT NOT NULL,
     coupon TEXT,
     discount REAL DEFAULT 0,
-    original_date TEXT
+    originalDate TEXT
 );

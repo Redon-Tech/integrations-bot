@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 let client = null;
 
-const stateTime = Date.now();
+const startTime = Date.now();
 
 /**
  * Initilize the server & bot client.
