@@ -3,6 +3,7 @@ const createEmbed = require('./embedCreator')
 const formatTime = require('./formatUptime')
 const config = require('../../config/config.json');
 const botLogger = require("./botLogger")
+const salesTracker = require('./salesTracker')
 
 const { salesChannelId, refundsChannelId, subscriptionsChannelId } = config.discordConfig;
 const { webhookPort, webhookPath, webhookURL } = config.webhookConfig;
@@ -63,6 +64,20 @@ function serverInit(botClient) {
 
             await channel.send({ embeds: [embed] });
             botLogger.logEvent(`Processed webhook event: ${eventType}`);
+            
+            // Track the event in sales tracker
+            switch (eventType) {
+                case "paid":
+                    salesTracker.trackSale(data);
+                    break;
+                case "refunded":
+                    salesTracker.trackRefund(data);
+                    break;
+                case "subscription.created":
+                case "subscription.deleted":
+                    salesTracker.trackSubscription(data, eventType);
+                    break;
+            }
             
             res.status(200).send('OK');
         } catch (error) {
