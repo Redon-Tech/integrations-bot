@@ -1,7 +1,7 @@
 ---
   template: home.html
   authors:
-    - parker02311
+    - MiataVxbe
   hide:
     - toc
     - navigation
