@@ -121,7 +121,7 @@ module.exports = {
         const message = await interaction.reply({
             embeds: [createEmbed(currentPage)],
             components: totalPages > 1 ? [createButtons(currentPage)] : [],
-            fetchReply: true
+            withResponse: true
         });
 
         // If only one page, no need for collector
