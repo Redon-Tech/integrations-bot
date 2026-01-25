@@ -74,6 +74,8 @@ function serverInit(botClient) {
                     salesTracker.trackRefund(data);
                     break;
                 case "subscription.created":
+                    salesTracker.trackSubscription(data, eventType);
+                    break;
                 case "subscription.deleted":
                     salesTracker.trackSubscription(data, eventType);
                     break;
