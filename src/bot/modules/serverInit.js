@@ -53,19 +53,8 @@ function serverInit(botClient) {
                     channelId = refundsChannelId;
                     break;
             }
-            const channel = await client.channels.fetch(channelId);
-            if (!channel) {
-                botLogger.logError(`Channel with ID ${channelId} not found.`);
-                res.status(500).send('Channel not found');
-                return;
-            }
 
-            const embed = createEmbed(eventType, data);
-
-            await channel.send({ embeds: [embed] });
-            botLogger.logEvent(`Processed webhook event: ${eventType}`);
-            
-            // Track the event in sales tracker
+            // Track the event in sales tracker first
             switch (eventType) {
                 case "paid":
                     salesTracker.trackSale(data);
@@ -80,7 +69,17 @@ function serverInit(botClient) {
                     salesTracker.trackSubscription(data, eventType);
                     break;
             }
-            
+
+            const channel = await client.channels.fetch(channelId);
+            if (!channel) {
+                botLogger.logError(`Channel with ID ${channelId} not found.`);
+                res.status(500).send('Channel not found');
+                return;
+            }
+
+            const embed = createEmbed(eventType, data);
+            await channel.send({ embeds: [embed] });
+            botLogger.logEvent(`Processed webhook event: ${eventType}`);
             res.status(200).send('OK');
         } catch (error) {
             botLogger.logError('Error processing webhook event', error);
