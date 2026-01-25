@@ -22,7 +22,7 @@ nav:
     - Configuration: database/config.md
   - Webhooks:
     - Setup: webhooks/setup.md
-    - Paddle Integration: webhooks/paddle.md
+    - Integration: webhooks/integration.md
   - Development:
     - Architecture: dev/architecture.md
     - Code Style: dev/code-style.md
