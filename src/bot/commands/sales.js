@@ -48,7 +48,7 @@ module.exports = {
     if (sales.length === 0) {
       return interaction.reply({
         content: `No sales found for the selected filter: **${filter}**`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -144,7 +144,7 @@ module.exports = {
     const message = await interaction.reply({
       embeds: [createEmbed(currentPage)],
       components: totalPages > 1 ? [createButtons(currentPage)] : [],
-      withResponse: true,
+      flags: 64, // MessageFlags.Ephemeral
     });
 
     // If only one page, no need for collector
