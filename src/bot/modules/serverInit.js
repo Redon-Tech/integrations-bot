@@ -54,20 +54,25 @@ function serverInit(botClient) {
                     break;
             }
 
-            // Track the event in sales tracker first
-            switch (eventType) {
-                case "paid":
-                    salesTracker.trackSale(data);
-                    break;
-                case "refunded":
-                    salesTracker.trackRefund(data);
-                    break;
-                case "subscription.created":
-                    salesTracker.trackSubscription(data, eventType);
-                    break;
-                case "subscription.deleted":
-                    salesTracker.trackSubscription(data, eventType);
-                    break;
+            // Prevent test payloads from being tracked in the database
+            const isTestPayload = typeof data.signature === 'string' && data.signature.startsWith('test');
+
+            if (!isTestPayload) {
+                // Track the event in sales tracker first
+                switch (eventType) {
+                    case "paid":
+                        salesTracker.trackSale(data);
+                        break;
+                    case "refunded":
+                        salesTracker.trackRefund(data);
+                        break;
+                    case "subscription.created":
+                        salesTracker.trackSubscription(data, eventType);
+                        break;
+                    case "subscription.deleted":
+                        salesTracker.trackSubscription(data, eventType);
+                        break;
+                }
             }
 
             const channel = await client.channels.fetch(channelId);
