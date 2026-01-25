@@ -64,4 +64,4 @@ Post-Teaser Testers:
 
 ## Special Thanks
 
-- Holtiscool - Idea (Asking me to create them an older version)
+- Holt_Official - Idea (Asking me to create them an older version)
