@@ -1,10 +1,11 @@
 {
   "discordConfig": {
-      "botActivity": "Listening to Payhip Sales",
-      "salesChannelId": "",
-      "refundsChannelId": "",
-      "subscriptionsChannelId": ""
+    "botActivity": "Listening to Payhip Sales",
+    "salesChannelId": "",
+    "refundsChannelId": "",
+    "subscriptionsChannelId": ""
   },
+
   "payhipConfig": {
     "eventTypes": {
       "newSale": true,
@@ -12,17 +13,20 @@
       "subscriptions": true
     }
   },
+
   "databaseConfig": {
     "maxSales": 200
   },
+
   "webhookConfig": {
     "webhookPort": 3000,
     "webhookPath": "/webhook/payhip",
     "webhookURL": "http://yourdomain.com/webhook/payhip"
   },
+
   "embedColors": {
-    "newSale": 65280,
-    "refund": 16711680,
-    "subscription": 255
+    "newSale": "#00FF00",
+    "refund": "#FF0000",
+    "subscription": "#0000FF"
   }
 }
