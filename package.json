@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Miatya/Payhip-Sales-Integration"
+    "url": "https://github.com/Redon-Tech/integrations-bot"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
