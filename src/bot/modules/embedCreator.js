@@ -60,9 +60,10 @@ function createEmbed(eventType, data) {
       const customerName = `${data.customer_first_name || ""} ${data.customer_last_name || ""}`.trim() || "N/A";
 
       const subCreatedDescription = [
-        `**Customer:** ${customerName}`,
+        //`**Customer:** ${customerName}`,
+        `**Customer:** HIDDEN FOR PRIVACY`,
         //`**Email:** ${data.customer_email || "N/A"}`,
-        `**Email: "HIDDEN FOR PRIVACY"`,
+        `**Email:** HIDDEN FOR PRIVACY`,
         `**Product:** ${data.product_name || "N/A"}`,
         `**Plan:** ${data.plan_name || "N/A"}`,
         `**Status:** ${data.status || "N/A"}`,
@@ -82,9 +83,10 @@ function createEmbed(eventType, data) {
       const customerDeleteName = `${data.customer_first_name || ""} ${data.customer_last_name || ""}`.trim() || "N/A";
 
       const subDeletedDescription = [
-        `**Customer:** ${customerDeleteName}`,
+        //`**Customer:** ${customerDeleteName}`,
+        `**Customer:** HIDDEN FOR PRIVACY`,
         //`**Email:** ${data.customer_email || "N/A"}`,
-        `**Email: "HIDDEN FOR PRIVACY"`,
+        `**Email:** HIDDEN FOR PRIVACY`,
         `**Product:** ${data.product_name || "N/A"}`,
         `**Plan:** ${data.plan_name || "N/A"}`,
         `**Status:** ${data.status || "N/A"}`,
