@@ -13,26 +13,20 @@
 
 <div class="hero-content">
 
-<h1><b>Unleash your creativity</b></h1>
+<h1><b>Integrations designed for practical use</b></h1>
 <p>
-Emergency Vehicle Creator is a tool designed to help you create the vehicles you have always dreamed of.
-Get rid of the complex web of laggy and hard-to-read scripts, and start creating your vehicles with ease.
+Redon Tech's Integration created to work alongside payhip is an older concept but re-imaginged to function better than existing competitors & all with the benifits of being open source.
 </p>
 <p>
-Emergency Vehicle Creator provides a simple and robust interface to create your vehicles, with a wide range of customization options.
-Easily create those flashing lights you dreamed of, or fading lights, or even rotating lights.
-</p>
-<p>
-No coding required, just your creativity. Start creating your vehicles today.
+Our Integration requires only a small bit of setup, some of which is fairly simple to do, and the rest will contain a detailed setup guide on how to get started!
 </p>
 <div class="hero-links">
 <a href="https://create.roblox.com/marketplace/asset/9953321418">Download Now</a>
-<a href="get-started/vehicle-setup/vehicle-creator/getting-started/" class="padd">Guide to get started</a>
+<a href="get-started/installation" class="padd">Guide to get started</a>
 </div>
 </div>
 
-<img src="/assets/home.webp" class="hero-video">
-<img src="/assets/home.png" class="hero-image hero-video">
+<img src="/assets/img/preview.png" class="hero-image hero-video">
 
 
 </div>
@@ -86,4 +80,4 @@ If you are interested in Emergency Vehicle Creator, you can download it from the
 Welcome to the Emergency Vehicle Creator community!
 
 [Download Now](https://create.roblox.com/marketplace/asset/9953321418){ .md-button .md-button--primary }
-[Get Started](get-started/vehicle-setup/vehicle-creator/getting-started.md){ .md-button .md-button--primary .button-left-margin }
+[Get Started](get-started/installation.md){ .md-button .md-button--primary .button-left-margin }
