@@ -1,10 +1,9 @@
-
 ---
-title: Sales Command
+title: Config Command
 authors:
-	- MiataVxbe
+  - MiataVxbe
 hide:
-	- navigation
+  - navigation
 ---
 
 # `/sales` Command

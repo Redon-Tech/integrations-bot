@@ -1,10 +1,9 @@
-
 ---
-title: Test Command
+title: Config Command
 authors:
-	- MiataVxbe
+  - MiataVxbe
 hide:
-	- navigation
+  - navigation
 ---
 
 # `/test` Command

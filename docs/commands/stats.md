@@ -1,10 +1,9 @@
-
 ---
-title: Stats Command
+title: Config Command
 authors:
-	- MiataVxbe
+  - MiataVxbe
 hide:
-	- navigation
+  - navigation
 ---
 
 # `/stats` Command
