@@ -1,4 +1,3 @@
-
 ---
 title: Contributing Guide
 authors:
