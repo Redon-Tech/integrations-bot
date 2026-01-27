@@ -1,4 +1,3 @@
-
 ---
 title: Project Architecture
 authors:
