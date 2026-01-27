@@ -1,4 +1,3 @@
-
 ---
 title: Code Style Guide
 authors:
