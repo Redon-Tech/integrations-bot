@@ -1,3 +1,11 @@
+---
+title: Config Command
+authors:
+  - MiataVxbe
+hide:
+  - navigation
+---
+
 # Database Queries
 
 This bot uses external SQL files to manage all database operations. Below is a list of each query file, its purpose, and a brief description of its usage.
