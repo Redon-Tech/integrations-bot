@@ -1,3 +1,11 @@
+---
+title: Config Command
+authors:
+  - MiataVxbe
+hide:
+  - navigation
+---
+
 # Database Schema
 
 This bot uses a simple SQLite database to store sales, refunds, subscriptions, and statistics. Below is a description of each table and its columns.
