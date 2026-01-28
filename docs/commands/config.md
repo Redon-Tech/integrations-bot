@@ -1,11 +1,8 @@
 ---
-title: Config Command
+title: Webhook Integration Overview
 authors:
   - MiataVxbe
-hide:
-  - navigation
 ---
-
 # `/config` Command
 
 The `/config` command allows server administrators to update the bot's configuration directly from Discord. This command is essential for changing bot settings without editing files manually or restarting the bot externally.
