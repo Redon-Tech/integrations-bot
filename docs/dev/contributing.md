@@ -1,12 +1,8 @@
-
 ---
-title: Contributing Guide
+title: Webhook Integration Overview
 authors:
-	- MiataVxbe
-hide:
-	- navigation
+  - MiataVxbe
 ---
-
 # Contributing
 
 Thank you for your interest in contributing to Integrations Bot! This guide will help you get started.
