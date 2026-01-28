@@ -1,12 +1,8 @@
-
 ---
-title: Project Architecture
+title: Webhook Integration Overview
 authors:
-	- MiataVxbe
-hide:
-	- navigation
+  - MiataVxbe
 ---
-
 # Architecture Overview
 
 This document provides a high-level overview of the Integrations Bot architecture, including its main components and data flow.
