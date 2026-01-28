@@ -1,11 +1,8 @@
 ---
-title: Config Command
+title: Webhook Integration Overview
 authors:
   - MiataVxbe
-hide:
-  - navigation
 ---
-
 # Database Configuration
 
 The bot uses a SQL-based database to store sales, refunds, and subscription data. Most users will not need to modify the database configuration, but advanced users can adjust some options in the `config.json` file.
