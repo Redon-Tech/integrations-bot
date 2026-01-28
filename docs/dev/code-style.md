@@ -1,12 +1,8 @@
-
 ---
-title: Code Style Guide
+title: Webhook Integration Overview
 authors:
-	- MiataVxbe
-hide:
-	- navigation
+  - MiataVxbe
 ---
-
 # Code Style Guide
 
 This document outlines the coding conventions and best practices for the Integrations Bot project.
