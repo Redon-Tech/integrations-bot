@@ -1,11 +1,8 @@
 ---
-title: Config Command
+title: Webhook Integration Overview
 authors:
   - MiataVxbe
-hide:
-  - navigation
 ---
-
 # `/sales` Command
 
 The `/sales` command allows server administrators to view recent sales, refunds, and subscription events tracked by the bot. Results are displayed in a paginated embed with navigation buttons for easy browsing.
