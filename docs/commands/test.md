@@ -1,11 +1,8 @@
 ---
-title: Config Command
+title: Webhook Integration Overview
 authors:
   - MiataVxbe
-hide:
-  - navigation
 ---
-
 # `/test` Command
 
 The `/test` command allows server administrators to send test webhook notifications to the bot's webhook endpoint. This is useful for verifying webhook handling and integration without making real purchases or subscription changes.
