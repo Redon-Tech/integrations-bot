@@ -1,3 +1,8 @@
+---
+title: Webhook Integration Overview
+authors:
+  - MiataVxbe
+---
 # Database Schema
 
 This bot uses a simple SQLite database to store sales, refunds, subscriptions, and statistics. Below is a description of each table and its columns.
