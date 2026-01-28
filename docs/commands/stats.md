@@ -1,11 +1,8 @@
 ---
-title: Config Command
+title: Webhook Integration Overview
 authors:
   - MiataVxbe
-hide:
-  - navigation
 ---
-
 # `/stats` Command
 
 The `/stats` command allows server administrators to view sales statistics, including sales, refunds, revenue, and subscriptions, for different time periods. Results are shown in a detailed embed with top products and summary metrics.
