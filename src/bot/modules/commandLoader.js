@@ -4,11 +4,11 @@ const { Collection, REST, Routes } = require('discord.js');
 const botLogger = require('./botLogger');
 
 /**
- * Load all slash commands from the commands directory
- * @param {Client} client - Discord client instance
- * @returns {Collection} Collection of loaded commands
+ * Loads all slash commands from the commands directory and registers them with Discord.
+ *
+ * @param {import('discord.js').Client} client - Discord client instance.
+ * @returns {Promise<import('discord.js').Collection>} Collection of loaded commands.
  */
-
 async function loadCommands(client) {
     client.commands = new Collection();
     

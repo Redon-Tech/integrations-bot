@@ -3,11 +3,12 @@ const config = require('../../config/config.json');
 const { newSale: saleColor, subscription: subscriptionColor, refund: refundColor } = config.embedColors;
 
 /**
- * This function creates a Discord embed message with the provided details.
+ * Creates a Discord embed message for a given Payhip event type and data.
+ *
+ * @param {string} eventType - The event type (e.g., 'paid', 'subscription.created', 'refunded').
  * @param {Object} data - Webhook data from Payhip.
- * @returns {EmbedBuilder} - The constructed Discord embed message.
+ * @returns {import('discord.js').EmbedBuilder} The constructed Discord embed message.
  */
-
 function createEmbed(eventType, data) {
   const embed = new EmbedBuilder().setTimestamp(new Date());
 

@@ -3,6 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const configPath = path.resolve(__dirname, '../../config/config.json');
 
+
+/**
+ * Retrieves the config keys for a given section from the config file.
+ * @param {string} sectionName - The section to get keys for.
+ * @returns {string[]} Array of key names.
+ */
 function getConfigKeys(sectionName) {
   const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   if (configData[sectionName] && typeof configData[sectionName] === 'object') {
@@ -10,11 +16,20 @@ function getConfigKeys(sectionName) {
   }
   return [];
 }
+
+/**
+ * Retrieves the top-level configuration sections from the config file.
+ * @returns {string[]} Array of section names.
+ */
 function getConfigSections() {
   const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   return Object.keys(configData);
 }
 
+/**
+ * Discord slash command for viewing available config keys for a section.
+ * @type {import('discord.js').SlashCommandBuilder}
+ */
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('configoptions')
@@ -25,6 +40,12 @@ module.exports = {
         .setRequired(true)
         .setAutocomplete(true)
     ),
+
+  /**
+   * Autocomplete handler for the configoptions command.
+   * @param {import('discord.js').AutocompleteInteraction} interaction - The autocomplete interaction.
+   * @returns {Promise<void>}
+   */
   async autocomplete(interaction) {
     const focusedOption = interaction.options.getFocused(true);
     if (focusedOption.name === 'section') {
@@ -32,6 +53,12 @@ module.exports = {
       await interaction.respond(sectionList.map(sectionName => ({ name: sectionName, value: sectionName })));
     }
   },
+
+  /**
+   * Executes the configoptions command, replying with available config keys for a section.
+   * @param {import('discord.js').ChatInputCommandInteraction} interaction - The command interaction.
+   * @returns {Promise<void>}
+   */
   async execute(interaction) {
     if (!interaction.memberPermissions.has('Administrator')) {
       await interaction.reply({ content: 'You must be an administrator to use this command.' });

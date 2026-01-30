@@ -3,11 +3,20 @@ const fs = require('fs');
 const path = require('path');
 const configPath = path.resolve(__dirname, '../../config/config.json');
 
+
+/**
+ * Retrieves the top-level configuration sections from the config file.
+ * @returns {string[]} Array of section names.
+ */
 function getConfigSections() {
   const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   return Object.keys(configData);
 }
 
+/**
+ * Discord slash command for updating bot configuration and restarting the bot.
+ * @type {import('discord.js').SlashCommandBuilder}
+ */
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('config')
@@ -32,6 +41,12 @@ module.exports = {
             .setRequired(true)
         )
     ),
+
+  /**
+   * Autocomplete handler for the config command.
+   * @param {import('discord.js').AutocompleteInteraction} interaction - The autocomplete interaction.
+   * @returns {Promise<void>}
+   */
   async autocomplete(interaction) {
     const focusedOption = interaction.options.getFocused(true);
     if (focusedOption.name === 'section') {
@@ -39,6 +54,12 @@ module.exports = {
       await interaction.respond(sectionList.map(sectionName => ({ name: sectionName, value: sectionName })));
     }
   },
+
+  /**
+   * Executes the config command, allowing admins to update config values.
+   * @param {import('discord.js').ChatInputCommandInteraction} interaction - The command interaction.
+   * @returns {Promise<void>}
+   */
   async execute(interaction) {
     if (!interaction.memberPermissions.has('Administrator')) {
       await interaction.reply({ content: 'You must be an administrator to use this command.' });

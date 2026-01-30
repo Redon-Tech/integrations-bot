@@ -7,8 +7,16 @@ const {
 } = require("discord.js");
 const salesTracker = require("../modules/salesTracker");
 
+/**
+ * Number of sales to show per page in the sales command.
+ * @type {number}
+ */
 const ITEMS_PER_PAGE = 10;
 
+/**
+ * Discord slash command for viewing recent sales.
+ * @type {import('discord.js').SlashCommandBuilder}
+ */
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("sales")
@@ -33,6 +41,11 @@ module.exports = {
         .setRequired(false),
     ),
 
+  /**
+   * Executes the sales command, replying with a paginated list of recent sales.
+   * @param {import('discord.js').ChatInputCommandInteraction} interaction - The command interaction.
+   * @returns {Promise<void>}
+   */
   async execute(interaction) {
     if (!interaction.memberPermissions.has("Administrator")) {
       await interaction.reply({
@@ -56,7 +69,11 @@ module.exports = {
     let currentPage = 0;
     const totalPages = Math.ceil(sales.length / ITEMS_PER_PAGE);
 
-    // Function to create embed for a specific page
+    /**
+     * Creates a Discord embed for a specific page of sales.
+     * @param {number} page - The page number to display.
+     * @returns {EmbedBuilder} The embed for the page.
+     */
     const createEmbed = (page) => {
       const start = page * ITEMS_PER_PAGE;
       const end = start + ITEMS_PER_PAGE;

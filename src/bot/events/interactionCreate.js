@@ -1,7 +1,18 @@
 const botLogger = require("../modules/botLogger");
 
+/**
+ * Discord event handler for 'interactionCreate' events.
+ * Handles command and autocomplete interactions.
+ * @type {{ name: string, execute: function(import('discord.js').Interaction): Promise<void> }}
+ */
 module.exports = {
   name: "interactionCreate",
+
+  /**
+   * Handles an interaction event from the Discord client.
+   * @param {import('discord.js').Interaction} interaction - The interaction object.
+   * @returns {Promise<void>}
+   */
   async execute(interaction) {
     if (interaction.isAutocomplete()) {
       const command = interaction.client.commands.get(interaction.commandName);

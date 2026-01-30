@@ -1,10 +1,19 @@
 const { SlashCommandBuilder, MessageFlags, EmbedBuilder } = require('discord.js');
 
+/**
+ * Discord slash command for displaying help information.
+ * @type {import('discord.js').SlashCommandBuilder}
+ */
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('Generic help command'),
     
+    /**
+     * Executes the help command, replying with a list of available commands.
+     * @param {import('discord.js').ChatInputCommandInteraction} interaction - The command interaction.
+     * @returns {Promise<void>}
+     */
     async execute(interaction) {
         const helpEmbed = new EmbedBuilder()
             .setTitle('Command Overview')

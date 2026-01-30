@@ -1,7 +1,8 @@
 /**
- * Format uptime in seconds to human-readable format
- * @param {Number} seconds - Uptime in seconds
- * @returns {String} Formatted uptime string
+ * Formats uptime in seconds to a human-readable string (e.g., '1d 2h 3m 4s').
+ *
+ * @param {number} seconds - Uptime in seconds.
+ * @returns {string} Formatted uptime string.
  */
 function formatUptime(seconds) {
     const days = Math.floor(seconds / 86400);

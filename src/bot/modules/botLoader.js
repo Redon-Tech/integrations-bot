@@ -5,11 +5,11 @@ const config = require('../../config/config.json').discordConfig;
 const botLogger = require('./botLogger');
 const { loadCommands } = require('./commandLoader');
 
-/** 
- * initializes and returns a Discord bot client
- * @returns {Object} Client instance and start time
+/**
+ * Initializes and returns a Discord bot client, loads commands and events.
+ *
+ * @returns {Promise<{client: import('discord.js').Client, startTime: number}>} Client instance and start time.
  */
-
 async function initializeBot() {
     const client = new Client({
         intents: [

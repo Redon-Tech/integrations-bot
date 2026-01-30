@@ -18,14 +18,15 @@ let client = null;
 const startTime = Date.now();
 
 /**
- * Initilize the server & bot client.
- * @param {Client} botClient - Discord Bot Client
+ * Initializes the Express server and webhook endpoints for Payhip integration.
+ * Binds the Discord bot client for sending notifications.
+ *
+ * @param {import('discord.js').Client} botClient - Discord Bot Client
  */
-
 function serverInit(botClient) {
     client = botClient;
 
-    // Verifiy the webhook endpoint
+    // Verify the webhook endpoint
     app.get(webhookPath, (req, res) => {
         res.status(200).send('Webhook endpoint is live.');
     });
@@ -33,6 +34,11 @@ function serverInit(botClient) {
     // Main Payhip webhook endpoint
     app.post(webhookPath, async (req, res) => {
         try {
+            /**
+             * @type {Object} data - Webhook payload from Payhip
+             * @property {string} type - Event type (e.g., 'paid', 'subscription.created')
+             * @property {string} [signature] - Signature for test payload detection
+             */
             const data = req.body;
             const eventType = data.type || data.event;
 

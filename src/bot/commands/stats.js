@@ -1,7 +1,12 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const salesTracker = require("../modules/salesTracker");
 
-// Helper function to format currency with commas
+
+/**
+ * Formats a number as currency with commas and two decimal places.
+ * @param {number} amount - The amount to format.
+ * @returns {string} The formatted currency string.
+ */
 function formatCurrency(amount) {
   return amount.toLocaleString("en-US", {
     minimumFractionDigits: 2,
@@ -9,6 +14,10 @@ function formatCurrency(amount) {
   });
 }
 
+/**
+ * Discord slash command for viewing sales statistics.
+ * @type {import('discord.js').SlashCommandBuilder}
+ */
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("stats")
@@ -26,6 +35,11 @@ module.exports = {
         .setRequired(false),
     ),
 
+  /**
+   * Executes the stats command, replying with sales statistics for the selected period.
+   * @param {import('discord.js').ChatInputCommandInteraction} interaction - The command interaction.
+   * @returns {Promise<void>}
+   */
   async execute(interaction) {
     if (!interaction.memberPermissions.has("Administrator")) {
       await interaction.reply({

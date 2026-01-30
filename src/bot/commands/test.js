@@ -1,6 +1,14 @@
+/**
+ * Discord slash command for sending test webhook notifications.
+ * @type {import('discord.js').SlashCommandBuilder}
+ */
 const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const config = require("../../config/config.json");
 
+/**
+ * Example test payloads for simulating Payhip events.
+ * @type {Object}
+ */
 const testPayloads = {
   paid: {
     id: "TEST123",

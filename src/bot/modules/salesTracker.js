@@ -9,7 +9,14 @@ const SCHEMA_DIR = path.join(DATA_DIR, 'schema');
 const QUERIES_DIR = path.join(DATA_DIR, 'queries');
 const DB_FILE = path.join(DATA_DIR, 'sales.db');
 
+/**
+ * Class for tracking sales, refunds, and subscriptions using a SQLite database.
+ * Handles database initialization, queries, and statistics aggregation.
+ */
 class SalesTracker {
+    /**
+     * Constructs a new SalesTracker instance and initializes the database.
+     */
     constructor() {
         this.maxSales = config.databaseConfig?.maxSales || 200;
         this.ensureDataDirectory();
@@ -18,6 +25,9 @@ class SalesTracker {
         this.initializeDatabase();
     }
 
+    /**
+     * Ensures the data directory exists for storing the database.
+     */
     ensureDataDirectory() {
         if (!fs.existsSync(DATA_DIR)) {
             fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -25,6 +35,10 @@ class SalesTracker {
         }
     }
 
+    /**
+     * Loads SQL queries from the queries directory.
+     * @returns {Object} An object mapping query names to SQL strings.
+     */
     loadQueries() {
         const queries = {};
         const queryFiles = [
@@ -54,6 +68,9 @@ class SalesTracker {
         return queries;
     }
 
+    /**
+     * Initializes the database schema by executing SQL files.
+     */
     initializeDatabase() {
         // Execute SQL schema files
         const schemaFiles = [
