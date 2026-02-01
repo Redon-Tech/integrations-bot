@@ -10,7 +10,6 @@ nav:
   - Getting Started:
     - Installation: get-started/installation.md
     - Configuration: get-started/configuration.md
-    - First Run: get-started/first-run.md
   - Commands:
     - Sales: commands/sales.md
     - Stats: commands/stats.md
