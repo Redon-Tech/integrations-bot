@@ -9,7 +9,7 @@ A lightweight Discord bot that integrates Payhip with Discord to deliver real-ti
 
 1. **Clone the repository:**
   ```sh
-  git clone https://github.com/yourusername/integrations-bot.git
+  git clone https://github.com/Redon-Tech/integrations-bot.git
   cd integrations-bot
   ```
 2. **Install dependencies:**
