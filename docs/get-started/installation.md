@@ -3,18 +3,35 @@ title: Webhook Integration Overview
 authors:
   - MiataVxbe
 ---
-# Installation Guide
+# Installation & First Run Guide
 
-This guide covers two main installation scenarios:
-
-- **Self-Hosted (Home Server/PC/Raspberry Pi):** Run the bot on your own hardware at home or in your office.
-- **Paid VPS (Cloud Host):** Use a paid virtual private server (VPS) provider for 24/7 uptime and public accessibility.
-
-Both methods are supported! Follow the steps below for your preferred setup.
+Welcome! This guide will walk you through installing, configuring, and running the Integrations Bot for the first time.
 
 ---
 
-## Self-Hosted vs Paid VPS: Quick Comparison
+## 1. Prerequisites
+
+- **Node.js** (v18 or newer) installed
+- **npm** (comes with Node.js)
+- (Optional) SQLite for database inspection
+
+---
+
+## 2. Download & Extract the Bot
+
+Clone the repository or download the latest release:
+
+```sh
+git clone https://github.com/yourusername/integrations-bot.git
+cd integrations-bot
+```
+Or unzip the archive and open the folder in your code editor.
+
+---
+
+## 3. Choose Your Hosting Method
+
+You can run the bot on your own hardware (self-hosted) or a paid VPS/cloud server. See below for tips:
 
 | Feature                | Self-Hosted                | Paid VPS (Cloud Host)         |
 |------------------------|----------------------------|-------------------------------|
@@ -26,86 +43,36 @@ Both methods are supported! Follow the steps below for your preferred setup.
 
 ---
 
-## 1. Download the Bot Code
+## 4. Install Dependencies
 
-Welcome to the installation guide for the Payhip Sales Integration Bot! This step-by-step guide will help you set up the bot from scratch, including downloading the code, installing dependencies, and preparing your environment for production use.
-
----
-
-## 1. Download the Bot Code
-
-Download the latest version of the bot from the official repository:
-
-> [PLACEHOLDER_FOR_DOWNLOAD_LINK]
-
----
-
-## 2. Choose Your Hosting Method
-
-### Option A: Self-Hosted (Home Server/PC/Raspberry Pi)
-
-1. **Prepare your device:**
-  - Use Windows, Linux, or macOS. Raspberry Pi (with Node.js) is also supported.
-2. **Ensure your device stays online** for as long as you want the bot to run.
-3. **Set up port forwarding** on your router:
-  - Forward the port you set in `webhookConfig.webhookPort` (default: 3010) to your device’s local IP address.
-  - This allows Payhip to reach your webhook endpoint from the internet.
-4. **(Recommended) Use a dynamic DNS service** if your home IP changes frequently (e.g., DuckDNS, No-IP).
-5. **Continue with the steps below to extract, install, and configure the bot.**
-
----
-
-### Option B: Paid VPS (Cloud Host)
-
-1. **Choose a VPS provider:**
-  - Examples: DigitalOcean, Vultr, Linode, Hetzner, AWS Lightsail, etc.
-2. **Deploy a server:**
-  - Recommended: Ubuntu 22.04 LTS or similar.
-  - Choose a region close to your users.
-3. **Connect via SSH:**
-  - Use an SSH client (e.g., PuTTY, Terminal) to access your VPS.
-4. **Update your system:**
-  - Run `sudo apt update && sudo apt upgrade -y` (Linux) to ensure your server is up to date.
-5. **Install Node.js:**
-  - Use NodeSource or your package manager to install Node.js v18+.
-6. **Continue with the steps below to extract, install, and configure the bot.**
-
----
-
-> ![Download Page Screenshot](../assets/img/download_page_screenshot)
-
----
-
-## 2. Extract and Open the Project
-_(If you used a VPS, upload or clone the project to your server before this step.)_
-
-Unzip the downloaded archive (if applicable) and open the project folder in your code editor (e.g., VS Code).
----
-
-## 3. Install Dependencies
-
-Make sure you have [Node.js](https://nodejs.org/) (v18 or newer) installed. Then, open a terminal in the project directory and run:
-
-```
+```sh
 npm install
 ```
 
-This will install all required packages listed in `package.json`.
+---
+
+## 5. Configuration
+
+1. Copy the template config and env files:
+   ```sh
+   cp src/config/template.config.json src/config/config.json
+   cp src/config/.env.template src/config/.env
+   ```
+2. Open `src/config/config.json` and fill in:
+   - **Channel IDs** for sales, refunds, subscriptions (under `discordConfig`)
+   - **Webhook config** (under `webhookConfig`)
+   - Any other required fields (see comments in the template)
+3. Save the file.
+4. Open `src/config/.env` and fill in:
+   - **BOT_TOKEN** (from Discord Developer Portal)
+   - **CLIENT_ID** (from Discord Developer Portal)
+5. Save the file.
 
 ---
 
-## 4. Configure Your Bot
+## 6. Domain Setup (Recommended)
 
-Follow the [Configuration Guide](configuration.md) to set up your `config.json` file with your Discord and Payhip details.
-
-> ![Config File Screenshot](../assets/img/config_file_example.png)
-
----
-
-## 5. Setting Up a Domain (Recommended)
-_(Both self-hosted and VPS users benefit from a domain for webhooks. See below for networking tips.)_
-
-To receive Payhip webhooks, your bot must be accessible from the internet. This requires a public domain name.
+To receive Payhip webhooks reliably, your bot must be accessible from the internet. This usually means setting up a public domain name and DNS.
 
 **Free Domain:**
 - Use [DigitalPlat](https://digitalplat.org/) to register a free domain.
@@ -121,42 +88,70 @@ To receive Payhip webhooks, your bot must be accessible from the internet. This 
 
 ---
 
-## 6. Running the Bot
-_(Run these commands on your self-hosted device or VPS, depending on your setup.)_
+## 7. Database Setup
 
-Start the bot with:
+- The bot will create the SQLite database and tables automatically on first run.
+- No manual setup is required unless you want to inspect or modify the schema (see `src/data/schema/`).
 
-```
+---
+
+## 8. Running the Bot
+
+```sh
 node src/bot/Handler.js
 ```
-_Only use PM2 if using a home machine / server that won't autostart whatever process it's running on startup_
-Or use a process manager like [PM2](https://pm2.keymetrics.io/) for production:
-
+or, if you have a start script:
+```sh
+npm start
 ```
+Or use a process manager like [PM2](https://pm2.keymetrics.io/) for production:
+```sh
 npm install -g pm2
 pm2 start src/bot/Handler.js --name payhip-bot
 ```
 
-> ![Bot Running Screenshot](../assets/img/bot_running_example.png)
+You should see a message indicating the bot is online.
 
 ---
 
-## 7. Setting Up Payhip Webhooks
-_(Your webhook URL must be public. For self-hosted, this means your home IP/domain and port must be reachable from the internet. For VPS, use your server’s public IP/domain.)_
+## 9. Inviting the Bot
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and select your application.
+2. Under "OAuth2 > URL Generator", select `bot` and `applications.commands` scopes.
+3. Set permissions (at minimum: `Send Messages`, `Embed Links`, `Manage Webhooks`).
+4. Copy the generated URL and open it in your browser to invite the bot to your server.
+
+---
+
+## 10. Setting Up Payhip Webhooks
 
 1. Go to Payhip Dashboard > Account > Settings > Developer.
 2. Enter your public webhook URL (e.g., `https://yourdomain.com/webhook/payhip`).
 3. Select the events you want to receive.
 
-> ![Payhip Webhook Setup Screenshot](../assets/img/payip_settings_example.png)
+---
+
+## 11. Testing the Setup
+
+- Use `/ping` or `/test` in your Discord server to verify the bot is responding.
+- Check the console for any errors or status messages.
 
 ---
 
-## Troubleshooting
+## 12. Troubleshooting
 
-- **Bot won’t start?** Check your Node.js version and ensure all dependencies are installed.
-- **Webhooks not received?** Make sure your domain is set up correctly and your server is accessible from the internet.
-- **Discord errors?** Double-check your bot token and channel IDs in the config.
+- **Bot not appearing online?**
+  - Double-check your bot token in `.env` and config file.
+  - Make sure you have internet access and the correct Node.js version.
+- **Commands not working?**
+  - Ensure the bot has the right permissions in your server.
+  - Try re-inviting the bot with the correct scopes.
+- **Webhooks not received?**
+  - Make sure your domain is set up correctly and your server is accessible from the internet.
+  - Check firewall or port issues if self-hosting.
+- **Discord errors?**
+  - Double-check your bot token and channel IDs in the config.
+- For more help, see the documentation or open an issue on GitHub.
 
 ---
 
