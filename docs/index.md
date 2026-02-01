@@ -21,7 +21,7 @@ Redon Tech's Integration created to work alongside payhip is an older concept bu
 Our Integration requires only a small bit of setup, some of which is fairly simple to do, and the rest will contain a detailed setup guide on how to get started!
 </p>
 <div class="hero-links">
-<a href="https://create.roblox.com/marketplace/asset/9953321418">Download Now</a>
+<a href="https://github.com/Redon-Tech/integrations-bot">Download Now</a>
 <a href="get-started/installation" class="padd">Guide to get started</a>
 </div>
 </div>
