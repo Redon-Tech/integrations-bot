@@ -1,33 +1,23 @@
 {
-  "name": "payhip-sales-integration",
-  "version": "dev-2.0.0",
-  "description": "Discord bot for Payhip webhook notifications - receive sales data and post to Discord channels",
-  "main": "src/bot/Handler.js",
+  "name": "integrations-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node src/bot/Handler.js",
-    "dev": "node --watch src/bot/Handler.js"
+    "dev": "pnpm --filter dashboard dev",
+    "build": "pnpm --filter dashboard build",
+    "preview": "pnpm --filter dashboard preview",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "docs:dev": "mkdocs serve",
+    "docs:build": "mkdocs build"
   },
-  "keywords": [
-    "payhip",
-    "discord",
-    "webhook",
-    "sales",
-    "notifications",
-    "integration"
-  ],
-  "author": "MiataVxbe",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Redon-Tech/integrations-bot"
-  },
-  "dependencies": {
-    "better-sqlite3": "^12.6.2",
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "5.7.3"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   }
 }
